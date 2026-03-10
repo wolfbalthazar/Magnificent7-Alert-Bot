@@ -8,7 +8,7 @@ A simple Python-based stock market alert system for swing traders. It monitors t
 - **Alert Logic**: 
   - Triggers if RSI falls below 30 (oversold).
   - Triggers if the Fast MA (20) crosses the Slow MA (50) upwards (Golden Cross).
-- **Email Notifications**: Sends beautiful HTML-formatted alerts via SMTP.
+- **Email Notifications**: Sends basic HTML-formatted alerts via SMTP.
 - **Database Persistence**: Uses SQLite to remember past alerts and prevent duplicate emails within a 24-hour window.
 
 ## Installation & Setup
@@ -53,3 +53,4 @@ python show_history.py
 
 ## Disclaimer
 This does not constitute financial advice only educational purposes and my own fun. Always do your own research :)
+The code was co-written with antigravity.
