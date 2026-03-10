@@ -31,13 +31,12 @@ A simple Python-based stock market alert system for swing traders. It monitors t
    ```
 
 4. **Environment Variables:**
-   Create a `.env` file in the root directory and add your email credentials. Do NOT upload this file to GitHub!
+   Create a `.env` file in the root directory and add your email credentials. (personal info alert!)
    ```env
    SENDER_EMAIL="your_email@gmail.com"
    SENDER_PASSWORD="your_16_character_app_password"
    RECEIVER_EMAIL="receiver_email@example.com"
    ```
-   *(Note: You must generate a Google App Password if using Gmail).*
 
 ## Usage
 
@@ -53,4 +52,4 @@ python show_history.py
 ```
 
 ## Disclaimer
-This project is for educational purposes only. It does not constitute financial advice. Always do your own research before making investment decisions.
+This does not constitute financial advice only educational purposes and my own fun. Always do your own research :)
