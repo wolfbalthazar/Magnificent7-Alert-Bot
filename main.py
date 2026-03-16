@@ -44,7 +44,7 @@ def run_analysis_for_ticker(ticker: str):
     if check_rsi_alert(df, threshold=30):
         if not is_duplicate(ticker, "RSI", hours=24):
             print(f" > ALERT: {ticker} RSI is {current_rsi:.2f} (Below 30)")
-            subject, body = format_rsi_alert(ticker, current_price, current_rsi)
+            subject, body = format_rsi_alert(ticker, current_price, current_rsi, interval=INTERVAL)
             send_email(subject, body)
             log_alert(ticker, "RSI", current_price, current_rsi)
         else:
@@ -54,7 +54,7 @@ def run_analysis_for_ticker(ticker: str):
     if check_ma_crossover(df, fast_col='MA_20', slow_col='MA_50'):
         if not is_duplicate(ticker, "MA_CROSS", hours=24):
             print(f" > ALERT: {ticker} MA 20 crossed MA 50 upwards.")
-            subject, body = format_ma_alert(ticker, current_price, fast_ma, slow_ma)
+            subject, body = format_ma_alert(ticker, current_price, fast_ma, slow_ma, interval=INTERVAL)
             send_email(subject, body)
             log_alert(ticker, "MA_CROSS", current_price, fast_ma)
         else:
@@ -87,7 +87,7 @@ def market_scan_job():
     #     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Market is closed. Skipping scan.")
     #     return
         
-    print(f"\n--- Starting 30m Market Scan for: {', '.join(TICKERS)} ---")
+    print(f"\n--- Starting 4h Market Scan for: {', '.join(TICKERS)} ---")
     for ticker in TICKERS:
         run_analysis_for_ticker(ticker)
     print("--- Scan Complete ---\n")
@@ -102,15 +102,11 @@ def main():
     # Run once immediately on startup
     market_scan_job()
     
-    # Schedule to run every 30 minutes
-    # Note: Using schedule.every(30).minutes might drift compared to actual 
-    # market open/close 30-min boundaries (9:30, 10:00, 10:30 etc.)
-    # For a beginner project, a simple interval is fine. A more robust way 
-    # would be to schedule exactly at HH:00 and HH:30.
+    # Schedule to run every 4 hours
+    # This is a basic scheduling approach. A more robust way 
+    # would be to schedule exactly at specific hours (e.g. 9:30, 13:30).
     
-    # To schedule exactly at the top and bottom of the hour:
-    schedule.every().hour.at(":00").do(market_scan_job)
-    schedule.every().hour.at(":30").do(market_scan_job)
+    schedule.every(4).hours.do(market_scan_job)
     
     print("Scheduler running. Waiting for next interval...")
     while True:

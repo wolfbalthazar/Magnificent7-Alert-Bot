@@ -4,11 +4,11 @@ from email.mime.multipart import MIMEMultipart
 import os
 from dotenv import load_dotenv
 
-# Betöltjük az .env fájl tartalmát
+# Load environment variables from .env file
 load_dotenv()
 
-# --- BEÁLLÍTÁSOK ---
-# Ezek az értékek most már az .env fájlból jönnek
+# --- SETTINGS ---
+# These values are now loaded from the .env file
 SENDER_EMAIL = os.getenv("SENDER_EMAIL")
 SENDER_PASSWORD = os.getenv("SENDER_PASSWORD")
 RECEIVER_EMAIL = os.getenv("RECEIVER_EMAIL")
@@ -45,65 +45,71 @@ def send_email(subject: str, html_body: str):
     except Exception as e:
         print(f"Failed to send email: {e}")
 
-def format_rsi_alert(ticker: str, current_price: float, rsi_value: float) -> tuple[str, str]:
+def format_rsi_alert(ticker: str, current_price: float, rsi_value: float, interval: str = "4h") -> tuple[str, str]:
     """
     Formats the subject and HTML body for an RSI indicator alert.
     """
-    subject = f"🚨 Tőzsdei Riasztás: {ticker} RSI Túladott (<30)"
+    # Convert interval string to a more readable format
+    interval_display = interval.replace("h", " hour").replace("m", " minute")
+    
+    subject = f"🚨 Stock Alert: {ticker} RSI Oversold (<30)"
     body = f"""
     <html>
       <body style="font-family: Arial, sans-serif; padding: 20px;">
-        <h2 style="color: #d13a3a;">RSI Túladottság Jelzés!</h2>
-        <p>A(z) <strong>{ticker}</strong> részvény 30 perces grafikonján az RSI 30 alá esett.</p>
+        <h2 style="color: #d13a3a;">RSI Oversold Alert!</h2>
+        <p>The RSI for <strong>{ticker}</strong> has dropped below 30 on the {interval_display} chart.</p>
         <table style="border-collapse: collapse; width: 100%; max-width: 400px; margin-top: 20px;">
           <tr style="background-color: #f2f2f2;">
-            <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Adat</th>
-            <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Érték</th>
+            <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Metric</th>
+            <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Value</th>
           </tr>
           <tr>
-            <td style="padding: 10px; border: 1px solid #ddd;">Jelenlegi Ár</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">Current Price</td>
             <td style="padding: 10px; border: 1px solid #ddd;"><b>${current_price:.2f}</b></td>
           </tr>
           <tr>
-            <td style="padding: 10px; border: 1px solid #ddd;">Jelenlegi RSI</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">Current RSI</td>
             <td style="padding: 10px; border: 1px solid #ddd;"><b style="color: #d13a3a;">{rsi_value:.2f}</b></td>
           </tr>
         </table>
-        <p style="margin-top: 20px;"><i>Ez egy automatikus üzenet a Python Tőzsdefigyelő programodból.</i></p>
+        <p style="margin-top: 20px;"><i>This is an automated message from your Python Stock Monitor via GitHub.</i></p>
       </body>
     </html>
     """
     return subject, body
 
-def format_ma_alert(ticker: str, current_price: float, fast_ma: float, slow_ma: float) -> tuple[str, str]:
+def format_ma_alert(ticker: str, current_price: float, fast_ma: float, slow_ma: float, interval: str = "4h") -> tuple[str, str]:
     """
     Formats the subject and HTML body for a Moving Average crossover alert.
     """
-    subject = f"📈 Tőzsdei Riasztás: {ticker} MA Kereszteződés (Golden Cross)"
+    # Convert interval string to a more readable format
+    interval_display = interval.replace("h", " hour").replace("m", " minute")
+
+    subject = f"📈 Stock Alert: {ticker} MA Crossover (Golden Cross)"
     body = f"""
     <html>
       <body style="font-family: Arial, sans-serif; padding: 20px;">
-        <h2 style="color: #2e8b57;">Mozgóátlag Kereszteződés!</h2>
-        <p>A(z) <strong>{ticker}</strong> részvény 30 perces grafikonján a gyors mozgóátlag (MA 20) alulról felfelé metszette a lassút (MA 50).</p>
+        <h2 style="color: #2e8b57;">Moving Average Crossover!</h2>
+        <p>The Fast Moving Average (MA 20) for <strong>{ticker}</strong> has crossed above the Slow MA (50) on the {interval_display} chart.</p>
         <table style="border-collapse: collapse; width: 100%; max-width: 400px; margin-top: 20px;">
           <tr style="background-color: #f2f2f2;">
-            <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Adat</th>
-            <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Érték</th>
+            <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Metric</th>
+            <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Value</th>
           </tr>
           <tr>
-            <td style="padding: 10px; border: 1px solid #ddd;">Jelenlegi Ár</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">Current Price</td>
             <td style="padding: 10px; border: 1px solid #ddd;"><b>${current_price:.2f}</b></td>
           </tr>
           <tr>
-            <td style="padding: 10px; border: 1px solid #ddd;">Gyors MA (20)</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">Fast MA (20)</td>
             <td style="padding: 10px; border: 1px solid #ddd;">${fast_ma:.2f}</td>
           </tr>
           <tr>
-            <td style="padding: 10px; border: 1px solid #ddd;">Lassú MA (50)</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">Slow MA (50)</td>
             <td style="padding: 10px; border: 1px solid #ddd;">${slow_ma:.2f}</td>
           </tr>
         </table>
-        <p style="margin-top: 20px;"><i>Ez egy automatikus üzenet a Python Tőzsdefigyelő programodból.</i></p>
+        <p style="margin-top: 20px;"><i>This is an automated message from your Python Stock Monitor via GitHub.</i></p>
       </body>
     </html>
     """
